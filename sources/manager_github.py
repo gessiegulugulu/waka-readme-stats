@@ -156,10 +156,10 @@ class GitHubManager:
         if EM.COMMIT_SINGLE:
             DBM.i("Pushing files to repo as a single commit...")
             refspec = f"{GitHubManager._SINGLE_COMMIT_BRANCH}:{GitHubManager.branch(EM.PUSH_BRANCH_NAME)}"
-            headers = GitHubManager.REPO.remotes.origin.push(force=True, refspec=refspec)
+            headers = await GitHubManager.REPO.remotes.origin.push(force=True, refspec=refspec)
         else:
             DBM.i("Pushing files to repo...")
-            headers = GitHubManager.REPO.remotes.origin.push()
+            headers = await GitHubManager.REPO.remotes.origin.push()
 
         if len(headers) == 0:
             DBM.i(f"Repository push error: {headers}!")
