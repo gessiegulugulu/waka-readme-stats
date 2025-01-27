@@ -182,7 +182,7 @@ class DownloadManager:
             DownloadManager._REMOTE_RESOURCES_CACHE[resource] = res
             DBM.g(f"\tQuery '{resource}' finished, result saved!")
         else:
-            res = DownloadManager._REMOTE_RESOURCES_CACHE[resource]
+            res = await DownloadManager._REMOTE_RESOURCES_CACHE[resource]
             DBM.g(f"\tQuery '{resource}' loaded from cache!")
         if res.status_code == 200:
             if convertor is None:
@@ -271,11 +271,11 @@ class DownloadManager:
         :return: Response JSON dictionary.
         """
         initial_query_response = await DownloadManager._fetch_graphql_query(query, **kwargs, pagination="first: 100")
-        page_list, page_info = DownloadManager._find_pagination_and_data_list(initial_query_response)
+        page_list, page_info = await DownloadManager._find_pagination_and_data_list(initial_query_response)
         while page_info["hasNextPage"]:
             pagination = f'first: 100, after: "{page_info["endCursor"]}"'
             query_response = await DownloadManager._fetch_graphql_query(query, **kwargs, pagination=pagination)
-            new_page_list, page_info = DownloadManager._find_pagination_and_data_list(query_response)
+            new_page_list, page_info = await DownloadManager._find_pagination_and_data_list(query_response)
             page_list += new_page_list
         return page_list
 
@@ -297,7 +297,7 @@ class DownloadManager:
                 res = await DownloadManager._fetch_graphql_paginated(query, **kwargs)
             else:
                 res = await DownloadManager._fetch_graphql_query(query, **kwargs)
-            DownloadManager._REMOTE_RESOURCES_CACHE[key] = res
+            await DownloadManager._REMOTE_RESOURCES_CACHE[key] = res
         else:
-            res = DownloadManager._REMOTE_RESOURCES_CACHE[key]
+            res = await DownloadManager._REMOTE_RESOURCES_CACHE[key]
         return res
